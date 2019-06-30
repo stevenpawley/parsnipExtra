@@ -1,0 +1,14 @@
+Package: parsnipExtra
+Type: Package
+Title: Extra model specifications for use with the parsnip package
+Version: 0.1.0
+Author: Steven Pawley
+Maintainer: The package maintainer <dr.stevenpawley@gmail.com>
+Description: A collection of model specifications for use with the parsnip package
+License: GPL-3 | file LICENSE
+Encoding: UTF-8
+LazyData: true
+Imports:
+    parsnip,
+    rlang
+RoxygenNote: 6.1.1
