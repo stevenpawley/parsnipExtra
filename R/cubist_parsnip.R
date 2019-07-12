@@ -1,6 +1,3 @@
-library(parsnip)
-library(rlang)
-
 cubist_forest_modes <- c("regression", "unknown")
 
 cubist_forest_engines <- data.frame(
@@ -10,8 +7,7 @@ cubist_forest_engines <- data.frame(
 
 cubist_forest_arg_key <- data.frame(
   Cubist    =  c("trees", "neighbors"),
-  row.names =  c("trees", "neighbors"),
-  stringsAsFactors = FALSE
+  row.names =  c("trees", "neighbors")
 )
 
 #' Cubist regression trees model specification
@@ -22,11 +18,12 @@ cubist_forest_arg_key <- data.frame(
 #'
 #' @return model_spec object
 #' @export
+#' @importFrom rlang enquo
 cubist_forest <- function(mode = "unknown", trees = 1, neighbors = 0) {
     
     args <- list(
-      trees  = enquo(trees),
-      neighbors  = enquo(neighbors)
+      trees = enquo(trees),
+      neighbors = enquo(neighbors)
     )
     
     parsnip:::new_model_spec(
@@ -51,15 +48,16 @@ cubist_forest_Cubist_data$fit <-
 
 cubist_forest_Cubist_data$numeric = list(
   pre = NULL,
-  post = NULL,
-  func = c(fun = "predict"),
+  post = function(results, object) results,
+  func = c(pkg = NULL, fun = "predict"),
   args =
     list(
-      object = expr(object$fit),
-      newdata = expr(new_data)
+      object = rlang::expr(object$fit),
+      newdata = rlang::expr(new_data)
     )
 )
 
+#' @importFrom rlang quo
 translate.cubist_forest <- function(x, engine = x$engine, ...) {
 
   if (is.null(engine)) {
@@ -81,11 +79,9 @@ translate.cubist_forest <- function(x, engine = x$engine, ...) {
   x
 }
 
-
-update.cubist_forest <-
-  function(object,
-           trees = NULL, 
-           neighbors = NULL, ...) {
+#' @importFrom rlang enquo
+#' @importFrom purrr map_lgl
+update.cubist_forest <- function(object, trees = NULL, neighbors = NULL, ...) {
     
     parsnip:::update_dot_check(...)
     
@@ -95,6 +91,7 @@ update.cubist_forest <-
     )
     
     null_args <- map_lgl(args, parsnip:::null_value)
+    
     if (any(null_args))
       args <- args[!null_args]
     if (length(args) > 0)
