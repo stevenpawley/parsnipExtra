@@ -6,8 +6,8 @@
 #' @importFrom parsnip set_model_engine set_dependency set_model_arg set_fit
 #' set_pred
 add_cubist_engine <- function() {
-  set_model_engine("boost_tree", "regression", "Cubist")
-  set_dependency("boost_tree", "Cubist", "Cubist")
+  set_model_engine(model = "boost_tree", mode = "regression", eng = "Cubist")
+  set_dependency(model = "boost_tree", eng = "Cubist", pkg = "Cubist")
   
   # declare main arguments
   set_model_arg(
@@ -15,7 +15,7 @@ add_cubist_engine <- function() {
     eng = "Cubist",
     parsnip = "trees",
     original = "committees",
-    func = list(pkg = "Cubist", fun = "cubist"),
+    func = list(pkg = "dials", fun = "trees"),
     has_submodel = FALSE
   )
   
@@ -41,12 +41,11 @@ add_cubist_engine <- function() {
       pre = NULL,
       post = NULL,
       func = c(fun = "predict"),
-      args =
-        list(
+      args = list(
           object = quote(object$fit),
           newdata = quote(new_data),
-          type = "numeric"
+          neighbors = 0
         )
+      )
     )
-  )
 }
