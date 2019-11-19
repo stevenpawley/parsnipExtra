@@ -1,4 +1,4 @@
-#' Wrapper to add the `Cubist` engine to the parsnip `rand_forest` models
+#' Wrapper to add the `Cubist` engine to the parsnip `boost_tree` models
 #' specification
 #'
 #' @return NULL
@@ -6,12 +6,12 @@
 #' @importFrom parsnip set_model_engine set_dependency set_model_arg set_fit
 #' set_pred
 add_cubist_engine <- function() {
-  set_model_engine("rand_forest", "regression", "Cubist")
-  set_dependency("rand_forest", "Cubist", "Cubist")
+  set_model_engine("boost_tree", "regression", "Cubist")
+  set_dependency("boost_tree", "Cubist", "Cubist")
   
   # declare main arguments
   set_model_arg(
-    model = "rand_forest",
+    model = "boost_tree",
     eng = "Cubist",
     parsnip = "trees",
     original = "committees",
@@ -21,7 +21,7 @@ add_cubist_engine <- function() {
   
   # add fit module
   set_fit(
-    model = "rand_forest",
+    model = "boost_tree",
     eng = "Cubist",
     mode = "regression",
     value = list(
@@ -33,7 +33,7 @@ add_cubist_engine <- function() {
   )
   
   set_pred(
-    model = "rand_forest",
+    model = "boost_tree",
     eng = "Cubist",
     mode = "regression",
     type = "numeric",
