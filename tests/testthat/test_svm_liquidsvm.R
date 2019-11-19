@@ -1,16 +1,12 @@
 library(testthat)
 library(parsnip)
 library(rlang)
-
-# ------------------------------------------------------------------------------
-
-context("poly SVM")
-source("helpers.R")
+library(tibble)
 
 # ------------------------------------------------------------------------------
 
 test_that('primary arguments', {
-  basic <- svm_rbf()
+  basic <- svm_rbf(mode = "classification")
   basic_liquidSVM <- translate(basic %>% set_engine("liquidSVM"))
   
   expect_equal(
@@ -22,7 +18,7 @@ test_that('primary arguments', {
     )
   )
   
-  rbf_sigma <- svm_rbf(rbf_sigma = .2)
+  rbf_sigma <- svm_rbf(mode = "classification", rbf_sigma = .2)
   rbf_sigma_liquidSVM <- translate(rbf_sigma %>% set_engine("liquidSVM"))
   
   expect_equal(
@@ -30,8 +26,8 @@ test_that('primary arguments', {
     expected = list(
       x = expr(missing_arg()),
       y = expr(missing_arg()),
-      folds = 5,
-      gammas = quo(1 / !!new_empty_quosure(.2))
+      gammas = quo(.2),
+      folds = 5
     )
   )
   
@@ -41,6 +37,7 @@ test_that('engine arguments', {
   
   liquidSVM_scale <-
     svm_rbf() %>%
+    set_mode("classification") %>%
     set_engine("liquidSVM", scale = FALSE, predict.prob = TRUE, threads = 2, gpus = 1)
   
   expect_equal(
@@ -48,10 +45,10 @@ test_that('engine arguments', {
     expected = list(
       x = expr(missing_arg()),
       y = expr(missing_arg()),
-      scale = new_empty_quosure(FALSE),
-      predict.prob = new_empty_quosure(TRUE),
-      threads = new_empty_quosure(2),
-      gpus = new_empty_quosure(1),
+      scale = new_quosure(FALSE, env = empty_env()),
+      predict.prob = new_quosure(TRUE, env = empty_env()),
+      threads = new_quosure(2, env = empty_env()),
+      gpus = new_quosure(1, env = empty_env()),
       folds = 5
     )
   )
@@ -145,7 +142,7 @@ test_that('svm rbf regression prediction', {
     liquidSVM::svm(
       x = Sepal.Length ~ .,
       y = iris[, -5],
-      gammas = 1/.1,
+      gammas = .1,
       lambdas = 0.25,
       folds = 1,
       random_seed = 1234
@@ -155,7 +152,7 @@ test_that('svm rbf regression prediction', {
     liquidSVM::svm(
       x = iris[, 2:4],
       y = iris$Sepal.Length,
-      gammas = 1/.1,
+      gammas = .1,
       lambdas = 0.25,
       folds = 1,
       random_seed = 1234
@@ -291,7 +288,7 @@ test_that('svm rbf classification probabilities', {
     liquidSVM::svm(
       x = Species ~ .,
       y = iris,
-      gammas = 1/.1,
+      gammas = .1,
       lambdas = 0.125,
       folds = 1,
       random_seed = 1234,
