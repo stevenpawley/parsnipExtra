@@ -4,16 +4,9 @@
 \alias{h2o_train}
 \title{Parsnip model specification}
 \usage{
-h2o_train(
-  formula,
-  data,
-  l2 = 0,
-  hidden_dropout_ratios = 0,
-  hidden = 200,
-  epochs = 10,
-  activation = "RectifierWithDropout",
-  ...
-)
+h2o_train(formula, data, l2 = 0, hidden_dropout_ratios = 0,
+  hidden = 200, epochs = 10, activation = "RectifierWithDropout",
+  ...)
 }
 \arguments{
 \item{formula}{formula}

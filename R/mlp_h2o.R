@@ -244,6 +244,15 @@ h2o_train <- function(formula, data, l2 = 0, hidden_dropout_ratios = 0,
   eval_tidy(call, env = current_env())
 }
 
+
+#' Wrapper for prediction for h2o mlp model
+#'
+#' @param object model
+#' @param newdata data to predict
+#' @param ... currently unused
+#'
+#' @return tibble
+#' @export
 #' @importFrom h2o h2o.init as.h2o
 #' @importFrom stats predict
 #' @importFrom tibble as_tibble
