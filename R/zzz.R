@@ -3,4 +3,7 @@
   add_cubist_engine()
   add_h2o_engine()
   add_liquidSVM_engine()
+  
+  add_kriging_rk()
 }
+

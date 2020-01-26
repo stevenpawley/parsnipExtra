@@ -1,116 +1,169 @@
-# library(parsnip)
-# library(sf)
-# library(tidyverse)
-# library(gstat)
-# library(automap)
-# library(rlang)
-# 
-# data(meuse.all)
-# meuse.sf <- st_as_sf(meuse.all, coords = c("x", "y"))
-# 
-# krige_regr <- kriging(mode = "regression", neighbors = 16) %>%
-#   set_engine("gstat")
-# fitted <- fit(krige_regr, cadmium ~ elev + dist.m, meuse.sf)
-# predict(fitted, meuse.sf, type = "numeric")
-# predict(fitted, meuse.sf, type = "conf_int")
-
-
-
-# define new model
-set_new_model("kriging")
-set_model_mode(model = "kriging", mode = "regression")
-set_model_engine(
-  model = "kriging", 
-  mode = "regression", 
-  eng = "gstat"
-)
-
-# define model arguments and their mapping to parsnip nomenclature
-set_model_arg(
-  model = "kriging",
-  eng = "gstat",
-  parsnip = "neighbors",
-  original = "nmax",
-  func = list(pkg = "dials", fun = "neighbors"),
-  has_submodel = TRUE
-)
-
-# create model function
-kriging <- function(mode = "regression",  neighbors = NULL) {
+#' Wrapper to add regression kriging model specification
+#'
+#' @return NULL
+#' @export
+add_kriging_rk <- function() {
   
-  # Check for correct mode
-  if (mode != "regression")
-    stop("`mode` should be 'regression'", call. = FALSE)
-    
-  # Capture the arguments in quosures
-  args <- list(
-    neighbors = rlang::enquo(neighbors)
+  # define new model
+  parsnip::set_new_model(
+    model = "kriging_rk"
+  )
+  
+  parsnip::set_model_mode(
+    model = "kriging_rk", 
+    mode = "regression"
+  )
+  
+  parsnip::set_model_engine(
+    model = "kriging_rk", 
+    mode = "regression", 
+    eng = "gstat"
+  )
+  
+  # define model arguments and their mapping to parsnip nomenclature
+  parsnip::set_model_arg(
+    model = "kriging_rk",
+    eng = "gstat",
+    parsnip = "neighbors",
+    original = "nmax",
+    func = list(pkg = "dials", fun = "neighbors"),
+    has_submodel = TRUE
+  )
+  
+  # fit function for regression
+  parsnip::set_fit(
+    model = "kriging_rk",
+    eng = "gstat",
+    mode = "regression",
+    value = list(
+      interface = "formula",
+      protect = c("formula", "data"),
+      func = c(fun = "kriging_train"),
+      defaults = list()
     )
-    
-  # Save some empty slots for future parts of the specification
-  out <- list(
+  )
+  
+  # prediction function for regression
+  parsnip::set_pred(
+    model = "kriging_rk",
+    eng = "gstat",
+    mode = "regression",
+    type = "numeric",
+    value =   list(
+      pre = NULL,
+      post = NULL,
+      func = c(fun = "kriging_predict"),
+      args = list(
+        object = quote(object$fit),
+        new_data = quote(new_data),
+        type = "numeric"
+      )
+    )
+  )
+  
+  # prediction function for conf_int
+  parsnip::set_pred(
+    model = "kriging_rk",
+    eng = "gstat",
+    mode = "regression",
+    type = "conf_int",
+    value =   list(
+      pre = NULL,
+      post = NULL,
+      func = c(fun = "kriging_predict"),
+      args = list(
+        object = quote(object$fit),
+        new_data = quote(new_data),
+        type = "conf_int"
+      )
+    )
+  )
+  
+}
+
+
+#' Regression kriging model specification
+#'
+#' @param mode character, only 'regression' is currently implemented
+#' @param neighbors integer, maximum number of points to use in neighborhood
+#'
+#' @return NULL
+#' @export
+kriging_rk <- function(mode = "regression", neighbors = NULL) {
+  
+  args <- list(neighbors = rlang::enquo(neighbors))
+  
+  parsnip::new_model_spec(
+    "kriging_rk",
     args = args,
     eng_args = NULL,
     mode = mode,
     method = NULL,
     engine = NULL
   )
-    
-  # set classes in the correct order
-  class(out) <- make_classes("kriging")
-  out
+}
+
+
+#' Print generic function method for regression kriging model
+#'
+#' @param x A model object
+#' @param ... Not currently used
+#'
+#' @return NULL
+#' @export
+print.kriging_rk <- function(x, ...) {
+  cat("Regression Kriging Model Specification (", x$mode, ")\n\n", sep = "")
+  parsnip::model_printer(x, ...)
+  
+  if (!is.null(x$method$fit$args)) {
+    cat("Model fit template:\n")
+    print(parsnip::show_call(x))
   }
+  
+  invisible(x)
+}
 
-# fit function for regression
-set_fit(
-  model = "kriging",
-  eng = "gstat",
-  mode = "regression",
-  value = list(
-    interface = "formula",
-    protect = c("formula", "data"),
-    func = c(fun = "kriging_train"),
-    defaults = list()
-  )
-)
 
-# prediction function for regression
-set_pred(
-  model = "kriging",
-  eng = "gstat",
-  mode = "regression",
-  type = "numeric",
-  value =   list(
-    pre = NULL,
-    post = NULL,
-    func = c(fun = "predict.regr_krige"),
-    args = list(
-      object = quote(object$fit),
-      new_data = quote(new_data),
-      type = "numeric",
-      nmax = quote(object$spec$args$neighbors)
+#' Method to update a regression kriging model specification
+#' @export
+update.kriging_rk <-
+  function(object,
+           parameters = NULL,
+           neighbors = NULL,
+           fresh = FALSE, ...) {
+    
+    parsnip::update_dot_check(...)
+    
+    if (!is.null(parameters)) {
+      parameters <- parsnip::check_final_param(parameters)
+    }
+    
+    args <- list(
+      neighbors = rlang::enquo(neighbors)
     )
-  )
-)
-
-# prediction function for conf_int
-set_pred(
-  model = "kriging",
-  eng = "gstat",
-  mode = "regression",
-  type = "conf_int",
-  value =   list(
-    pre = NULL,
-    post = NULL,
-    func = c(fun = "predict.regr_krige"),
-    args = list(
-      object = quote(object$fit),
-      new_data = quote(new_data),
-      type = "conf_int",
-      nmax = quote(object$spec$args$neighbors)
+    
+    args <- parsnip::update_main_parameters(args, parameters)
+    
+    if (fresh) {
+      object$args <- args
+      
+    } else {
+      null_args <- map_lgl(args, null_value)
+      if (any(null_args))
+        args <- args[!null_args]
+      if (length(args) > 0)
+        object$args[names(args)] <- args
+    }
+    
+    parsnip::new_model_spec(
+      "kriging_rk",
+      args = object$args,
+      eng_args = object$eng_args,
+      mode = object$mode,
+      method = NULL,
+      engine = object$engine
     )
-  )
-)
+  }
 
 
 #' Regression Kriging
@@ -119,19 +172,16 @@ set_pred(
 #' @param input_data sf object containing sfc points features
 #' @param ... arguments to pass onto the automap::autofitVariogram function
 #'
-#' @return regr_krige class object
+#' @return kriging_rk class object
 #' @export
-#' @importFrom rlang list2 f_lhs exec
-#' @importFrom automap autofitVariogram
-#' @importFrom stats lm residuals predict
 kriging_train <- function(formula, data, ...) {
   
   # select response variable
-  response <- as.character(f_lhs(formula))
+  response <- as.character(rlang::f_lhs(formula))
   
   # select only arguments used for variogram fitting
   args <- list2(...)
-  
+
   automap_args <- c(
     "model",
     "kappa",
@@ -142,67 +192,92 @@ kriging_train <- function(formula, data, ...) {
     "miscFitOptions"
   )
   
-  if (any(names(args) != automap_args))
-    args <- args[!which(!names(args) %in% automap_args)]
+  if (any(!names(args) %in% automap_args)) {
+    fit_args <- args[names(args) %in% automap_args]
+  } else {
+    fit_args <- args
+  }
   
   # regression
-  regr_trend_model <- lm(formula = formula, data = data)
-  data$trend <- predict(regr_trend_model, data)
-  data$residual <- residuals(regr_trend_model)
+  regr_trend_model <- stats::lm(formula = formula, data = data)
+  data$trend <- stats::predict(regr_trend_model, data)
+  data$residual <- stats::residuals(regr_trend_model)
   
   # autofit variogram on residuals
   data <- data[, names(data) != response]
   
-  vgm_model_fit <- exec(
-    autofitVariogram,
-    formula = residual ~ 1,
-    input_data = as(data, "Spatial"),
-    !!!args)
+  fit_call <- rlang::quo(
+    rlang::exec(
+      automap::autofitVariogram,
+      formula = residual ~ 1,
+      input_data = as(data, "Spatial"),
+      !!!fit_args)
+    )
+  
+  vgm_model_fit <- rlang::eval_tidy(fit_call)
+  
+  # save arguments used for predict function for later
+  krige_args <- c(
+    "nmin",
+    "nmax",
+    "omax",
+    "maxdist",
+    "block",
+    "nsim",
+    "indicators",
+    "na.action",
+    "idp"
+  )
+  
+  if (any(names(args) %in% krige_args)) {
+    predict_args <- args[names(args) %in% krige_args]
+  } else {
+    predict_args <- list()
+  }
   
   structure(
-    list(lm = regr_trend_model, vgm = vgm_model_fit, data = data),
-    class = "regr_krige")
+    list(
+      lm = regr_trend_model,
+      vgm = vgm_model_fit,
+      data = data,
+      predict_args = predict_args
+    ),
+    class = "kriging_rk"
+  )
 }
 
 
 #' Predict function for regression kriging
 #'
-#' @param object regr_krige class object
+#' @param object kriging_rk class object
 #' @param newdata sf object, or SpatialGridDataFrame
 #' @param ... other arguments passed to gstat::krige function
 #'
 #' @return
 #' @export
-#' @importFrom sf st_set_crs st_crs st_drop_geometry
-#' @importFrom gstat krige
-#' @importFrom tibble tibble as_tibble
-#' @importFrom dplyr rename
-#' @importFrom purrr map
-predict.regr_krige <- function(object, new_data, type, ...) {
-  args <- list2(...)
-  args <- map(args, eval_tidy)
-
+kriging_predict <- function(object, new_data, type, ...) {
+  
   # predict trend from lm model
-  new_data$trend <- predict(object$lm, new_data)
+  new_data$trend <- stats::predict(object$lm, new_data)
   
   # ensure crs is the same between locations and newdata
-  new_data <- st_set_crs(new_data, st_crs(object$data))
+  new_data <- sf::st_set_crs(new_data, st_crs(object$data))
   
   # kriging prediction
-  call <- quo(
-    exec(
-      krige,
+  call <- rlang::quo(
+    rlang::exec(
+      gstat::krige,
       formula = residual ~ 1,
       locations = object$data,
       newdata = new_data,
       model = object$vgm$var_model,
       beta = 0,
       debug.level = 0,
-      !!!args
+      !!!object$predict_args
     )
   )
   
-  pred_krige <- eval_tidy(call)
+  pred_krige <- rlang::eval_tidy(call)
   
   # return predictions
   if (type == "numeric") {
@@ -212,21 +287,43 @@ predict.regr_krige <- function(object, new_data, type, ...) {
     
     prediction <- new_data$trend + pred_krige$var1.pred
     
-    output <- tibble(
-      .pred_lower = prediction - pred_krige$var1.var,
-      .pred_upper = prediction + pred_krige$var1.var
-      )
+    output <- tibble::tibble(
+      .pred_lower = prediction - (sqrt(pred_krige$var1.var) * 1.96),
+      .pred_upper = prediction + (sqrt(pred_krige$var1.var) * 1.96)
+    )
   }
   
   output
 }
 
 
-multi_predict._kriging <- 
+#' Multi_predict method for regression kriging model specification
+#'
+#' @param object 
+#' @param new_data 
+#' @param type 
+#' @param nmax 
+#' @param ... 
+#'
+#' @return
+#' @export
+multi_predict._kriging_rk <- 
   function(object, new_data, type = "numeric", neighbors = 16, ...) {
-  
-  if (any(names(enquos(...)) == "newdata"))
-    stop("Did you mean to use `new_data` instead of `newdata`?", call. = FALSE)
-  
-  predict(object, new_data, type, neighbors)
+    
+    args <- list2(...)
+    print(neighbors)
+    print(object)
+    
+    if (any(names(enquos(...)) == "newdata"))
+      stop("Did you mean to use `new_data` instead of `newdata`?", call. = FALSE)
+    
+    pred <- kriging_predict(object$fit, new_data, type, neighbors = neighbors)
+    
+    if (type == "numeric") {
+      output = tibble(.pred = pred)
+    } else if (type == "conf_int") {
+      output = output
+    }
+    
+    output
   }
