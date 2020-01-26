@@ -320,9 +320,10 @@ multi_predict._kriging_rk <-
     pred <- kriging_predict(object$fit, new_data, type, neighbors = neighbors)
     
     if (type == "numeric") {
-      output = tibble(.pred = pred)
+      output = tibble(neighbors = neighbors, .pred = pred)
     } else if (type == "conf_int") {
-      output = output
+      output = pred
+      output$neighbors <- neighbors
     }
     
     output
