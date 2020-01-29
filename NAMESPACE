@@ -2,7 +2,6 @@
 
 S3method(print,kriging_rk)
 S3method(update,kriging_rk)
-export(add_cubist_engine)
 export(add_fnn_engine)
 export(add_h2o_engine)
 export(add_kriging_rk)

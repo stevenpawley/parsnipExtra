@@ -13,15 +13,16 @@ multi_predict._kriging_rk(
 )
 }
 \arguments{
-\item{object}{}
+\item{object}{A model object}
 
-\item{new_data}{}
+\item{new_data}{sf object containing new_data to predict}
 
-\item{type}{}
+\item{type}{character, 'numeric' or 'conf_int'}
 
-\item{...}{}
+\item{neighbors}{integer, maximum number of closest points to use during
+prediction}
 
-\item{nmax}{}
+\item{...}{Currently unused}
 }
 \value{
 

@@ -148,7 +148,7 @@ update.kriging_rk <-
       object$args <- args
       
     } else {
-      null_args <- map_lgl(args, null_value)
+      null_args <- purrr::map_lgl(args, null_value)
       if (any(null_args))
         args <- args[!null_args]
       if (length(args) > 0)
@@ -299,11 +299,12 @@ kriging_predict <- function(object, new_data, type, ...) {
 
 #' Multi_predict method for regression kriging model specification
 #'
-#' @param object 
-#' @param new_data 
-#' @param type 
-#' @param nmax 
-#' @param ... 
+#' @param object A model object
+#' @param new_data sf object containing new_data to predict
+#' @param type character, 'numeric' or 'conf_int'
+#' @param neighbors integer, maximum number of closest points to use during
+#' prediction
+#' @param ... Currently unused 
 #'
 #' @return
 #' @export
@@ -311,16 +312,14 @@ multi_predict._kriging_rk <-
   function(object, new_data, type = "numeric", neighbors = 16, ...) {
     
     args <- list2(...)
-    print(neighbors)
-    print(object)
-    
+
     if (any(names(enquos(...)) == "newdata"))
       stop("Did you mean to use `new_data` instead of `newdata`?", call. = FALSE)
     
     pred <- kriging_predict(object$fit, new_data, type, neighbors = neighbors)
     
     if (type == "numeric") {
-      output = tibble(neighbors = neighbors, .pred = pred)
+      output = tibble::tibble(neighbors = neighbors, .pred = pred)
     } else if (type == "conf_int") {
       output = pred
       output$neighbors <- neighbors
