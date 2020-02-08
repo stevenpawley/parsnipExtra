@@ -139,7 +139,7 @@ add_fnn_engine <- function() {
 #'
 #' @return list containing the FNN call
 #' @export
-#' @importFrom rlang enquo call2
+#' @importFrom rlang enquo call2 eval_tidy
 fnn_train <- function(x, y = NULL, k = 1, algorithm = "kd_tree", ...) {
   
   # regression
@@ -179,6 +179,7 @@ fnn_train <- function(x, y = NULL, k = 1, algorithm = "kd_tree", ...) {
 #'
 #' @return data.frame containing the predicted rsults
 #' @export
+#' @importFrom rlang eval_tidy
 fnn_pred <- function(object, newdata, prob = FALSE, ...) {
   
   # modify the call for prediction
