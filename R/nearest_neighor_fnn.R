@@ -3,15 +3,13 @@
 #'
 #' @return NULL
 #' @export
-#' @importFrom parsnip set_model_engine set_dependency set_model_arg set_fit
-#' set_pred
 add_fnn_engine <- function() {
 
-  set_model_engine("nearest_neighbor", "classification", "FNN")
-  set_model_engine("nearest_neighbor", "regression", "FNN")
-  set_dependency("nearest_neighbor", "FNN", "FNN")
+  parsnip::set_model_engine("nearest_neighbor", "classification", "FNN")
+  parsnip::set_model_engine("nearest_neighbor", "regression", "FNN")
+  parsnip::set_dependency("nearest_neighbor", "FNN", "FNN")
   
-  set_model_arg(
+  parsnip::set_model_arg(
     model = "nearest_neighbor",
     eng = "FNN",
     parsnip = "neighbors",
@@ -19,8 +17,7 @@ add_fnn_engine <- function() {
     func = list(pkg = "dials", fun = "neighbors"),
     has_submodel = FALSE
   )
-  
-  set_fit(
+  parsnip::set_fit(
     model = "nearest_neighbor",
     eng = "FNN",
     mode = "regression",
@@ -31,8 +28,7 @@ add_fnn_engine <- function() {
       defaults = list()
     )
   )
-  
-  set_fit(
+  parsnip::set_fit(
     model = "nearest_neighbor",
     eng = "FNN",
     mode = "classification",
@@ -43,8 +39,7 @@ add_fnn_engine <- function() {
       defaults = list()
     )
   )
-  
-  set_pred(
+  parsnip::set_pred(
     model = "nearest_neighbor",
     eng = "FNN",
     mode = "regression",
@@ -59,8 +54,7 @@ add_fnn_engine <- function() {
       )
     )
   )
-  
-  set_pred(
+  parsnip::set_pred(
     model = "nearest_neighbor",
     eng = "FNN",
     mode = "regression",
@@ -75,8 +69,7 @@ add_fnn_engine <- function() {
       )
     )
   )
-  
-  set_pred(
+  parsnip::set_pred(
     model = "nearest_neighbor",
     eng = "FNN",
     mode = "classification",
@@ -91,15 +84,14 @@ add_fnn_engine <- function() {
       )
     )
   )
-  
-  set_pred(
+  parsnip::set_pred(
     model = "nearest_neighbor",
     eng = "FNN",
     mode = "classification",
     type = "prob",
     value = list(
       pre = NULL,
-      post = function(result, object) as_tibble(result),
+      post = function(result, object) tibble::as_tibble(result),
       func = c(fun = "fnn_pred"),
       args =
         list(
@@ -109,8 +101,7 @@ add_fnn_engine <- function() {
         )
     )
   )
-  
-  set_pred(
+  parsnip::set_pred(
     model = "nearest_neighbor",
     eng = "FNN",
     mode = "classification",
@@ -139,27 +130,26 @@ add_fnn_engine <- function() {
 #'
 #' @return list containing the FNN call
 #' @export
-#' @importFrom rlang enquo call2 eval_tidy
 fnn_train <- function(x, y = NULL, k = 1, algorithm = "kd_tree", ...) {
   
   # regression
   if (is.numeric(y)) {
     fun <- "knn.reg"
     main_args <- list(
-      train = enquo(x),
-      y = enquo(y),
+      train = rlang::enquo(x),
+      y = rlang::enquo(y),
       k = k,
       algorithm = algorithm)
     call <- parsnip:::make_call(fun = fun, ns = "FNN", main_args)
-    eval_tidy(call, env = current_env())
+    rlang::eval_tidy(call, env = rlang::current_env())
     
     # for classification return unevaluated call because FNN:knn
     # trains and predicts in same call
   } else {
     fun <- "knn"
     main_args <- list(
-      train = enquo(x),
-      cl = enquo(y),
+      train = rlang::enquo(x),
+      cl = rlang::enquo(y),
       k = k,
       algorithm = algorithm)
     call <- parsnip:::make_call(fun = fun, ns = "FNN", main_args)
@@ -179,7 +169,6 @@ fnn_train <- function(x, y = NULL, k = 1, algorithm = "kd_tree", ...) {
 #'
 #' @return data.frame containing the predicted rsults
 #' @export
-#' @importFrom rlang eval_tidy
 fnn_pred <- function(object, newdata, prob = FALSE, ...) {
   
   # modify the call for prediction
@@ -187,14 +176,14 @@ fnn_pred <- function(object, newdata, prob = FALSE, ...) {
   
   # regression result
   if ("y" %in% names(object$call)) {
-    res <- eval_tidy(object$call)
+    res <- rlang::eval_tidy(object$call)
     res <- res$pred
     
     # classification result
   } else {
     object$call$prob <- prob
-    lvl <- levels(eval_tidy(object$call$cl))
-    res <- eval_tidy(object$call)
+    lvl <- levels(rlang::eval_tidy(object$call$cl))
+    res <- rlang::eval_tidy(object$call)
     
     # probability for winning class
     if (prob == FALSE) {
