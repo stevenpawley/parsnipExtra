@@ -15,9 +15,9 @@ Imports:
     purrr,
     tibble,
     liquidSVM,
-    Cubist,
-    h2o,
-    FNN
+    FNN,
+    fastNaiveBayes,
+    discrim
 RoxygenNote: 7.0.2
 Suggests: 
     testthat
