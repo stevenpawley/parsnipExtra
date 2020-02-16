@@ -4,14 +4,17 @@
 \alias{kriging_train}
 \title{Regression Kriging}
 \usage{
-kriging_train(formula, data, ...)
+kriging_train(formula, data, nscore = FALSE, ...)
 }
 \arguments{
+\item{formula}{formula}
+
+\item{data}{sf object containing sfc points features}
+
+\item{nscore}{logical, whether to transform the training data using a normal
+score transform.}
+
 \item{...}{arguments to pass onto the automap::autofitVariogram function}
-
-\item{object}{formula}
-
-\item{input_data}{sf object containing sfc points features}
 }
 \value{
 kriging_rk class object

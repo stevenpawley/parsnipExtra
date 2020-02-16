@@ -3,6 +3,7 @@
 #'
 #' @return NULL
 #' @export
+#' @importFrom discrim naive_Bayes
 add_fastNaiveBayes_engine <- function() {
   
   parsnip::set_model_engine("naive_Bayes", "classification", "fastNaiveBayes")

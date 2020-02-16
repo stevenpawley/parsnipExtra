@@ -17,7 +17,10 @@ Imports:
     liquidSVM,
     FNN,
     fastNaiveBayes,
-    discrim
+    discrim,
+    automap,
+    gstat,
+    sf
 RoxygenNote: 7.0.2
 Suggests: 
     testthat

@@ -7,11 +7,13 @@
 kriging_predict(object, new_data, type, ...)
 }
 \arguments{
-\item{object}{kriging_rk class object}
+\item{object}{kriging_rk class object.}
+
+\item{new_data}{sf object, or SpatialGridDataFrame.}
+
+\item{type}{"numeric" or "conf_int".}
 
 \item{...}{other arguments passed to gstat::krige function}
-
-\item{newdata}{sf object, or SpatialGridDataFrame}
 }
 \value{
 

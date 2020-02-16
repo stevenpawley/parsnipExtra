@@ -123,7 +123,7 @@ add_liquidSVM_engine <- function() {
         x
       },
       post = function(result, object) {
-        res <- as_tibble(result)
+        res <- tibble::as_tibble(result)
         names(res) <- object$lvl
         res
       },

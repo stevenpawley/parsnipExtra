@@ -8,12 +8,10 @@ add_kriging_rk <- function() {
   parsnip::set_new_model(
     model = "kriging_rk"
   )
-  
   parsnip::set_model_mode(
     model = "kriging_rk", 
     mode = "regression"
   )
-  
   parsnip::set_model_engine(
     model = "kriging_rk", 
     mode = "regression", 
@@ -28,6 +26,14 @@ add_kriging_rk <- function() {
     original = "nmax",
     func = list(pkg = "dials", fun = "neighbors"),
     has_submodel = TRUE
+  )
+  parsnip::set_model_arg(
+    model = "kriging_rk",
+    eng = "gstat",
+    parsnip = "nscore",
+    original = "nscore",
+    func = list(fun = "nscore"),
+    has_submodel = FALSE
   )
   
   # fit function for regression
@@ -86,10 +92,12 @@ add_kriging_rk <- function() {
 #'
 #' @param mode character, only 'regression' is currently implemented
 #' @param neighbors integer, maximum number of points to use in neighborhood
+#' @param nscore, logical optionally transform and backtransform data using a
+#'   normal score transform
 #'
 #' @return NULL
 #' @export
-kriging_rk <- function(mode = "regression", neighbors = NULL) {
+kriging_rk <- function(mode = "regression", neighbors = NULL, nscore = FALSE) {
   
   args <- list(neighbors = rlang::enquo(neighbors))
   
@@ -125,11 +133,20 @@ print.kriging_rk <- function(x, ...) {
 
 
 #' Method to update a regression kriging model specification
+#'
+#' @param object model_spec
+#' @param parameters parameters
+#' @param neighbors integer 
+#' @param nscore logical
+#' @param fresh logical
+#' @param ... currently unused
+#'
 #' @export
 update.kriging_rk <-
   function(object,
            parameters = NULL,
            neighbors = NULL,
+           nscore = NULL,
            fresh = FALSE, ...) {
     
     parsnip::update_dot_check(...)
@@ -139,7 +156,8 @@ update.kriging_rk <-
     }
     
     args <- list(
-      neighbors = rlang::enquo(neighbors)
+      neighbors = rlang::enquo(neighbors),
+      nscore = rlang::enquo(nscore)
     )
     
     args <- parsnip::update_main_parameters(args, parameters)
@@ -148,7 +166,7 @@ update.kriging_rk <-
       object$args <- args
       
     } else {
-      null_args <- purrr::map_lgl(args, null_value)
+      null_args <- purrr::map_lgl(args, parsnip::null_value)
       if (any(null_args))
         args <- args[!null_args]
       if (length(args) > 0)
@@ -168,19 +186,29 @@ update.kriging_rk <-
 
 #' Regression Kriging
 #'
-#' @param object formula
-#' @param input_data sf object containing sfc points features
+#' @param formula formula
+#' @param data sf object containing sfc points features
+#' @param nscore logical, whether to transform the training data using a normal
+#'   score transform.
 #' @param ... arguments to pass onto the automap::autofitVariogram function
 #'
 #' @return kriging_rk class object
 #' @export
-kriging_train <- function(formula, data, ...) {
+kriging_train <- function(formula, data, nscore = FALSE, ...) {
   
   # select response variable
   response <- as.character(rlang::f_lhs(formula))
   
+  # nscore
+  if (isTRUE(nscore)) {
+    trans <- nscore(data[[response]])
+    data[[response]] <- trans$nscore
+  } else {
+    trans <- NULL
+  }
+  
   # select only arguments used for variogram fitting
-  args <- list2(...)
+  args <- rlang::list2(...)
 
   automap_args <- c(
     "model",
@@ -210,7 +238,7 @@ kriging_train <- function(formula, data, ...) {
     rlang::exec(
       automap::autofitVariogram,
       formula = residual ~ 1,
-      input_data = as(data, "Spatial"),
+      input_data = methods::as(data, "Spatial"),
       !!!fit_args)
     )
   
@@ -240,6 +268,7 @@ kriging_train <- function(formula, data, ...) {
       lm = regr_trend_model,
       vgm = vgm_model_fit,
       data = data,
+      trans = trans,
       predict_args = predict_args
     ),
     class = "kriging_rk"
@@ -249,8 +278,9 @@ kriging_train <- function(formula, data, ...) {
 
 #' Predict function for regression kriging
 #'
-#' @param object kriging_rk class object
-#' @param newdata sf object, or SpatialGridDataFrame
+#' @param object kriging_rk class object.
+#' @param new_data sf object, or SpatialGridDataFrame.
+#' @param type "numeric" or "conf_int".
 #' @param ... other arguments passed to gstat::krige function
 #'
 #' @return
@@ -261,7 +291,7 @@ kriging_predict <- function(object, new_data, type, ...) {
   new_data$trend <- stats::predict(object$lm, new_data)
   
   # ensure crs is the same between locations and newdata
-  new_data <- sf::st_set_crs(new_data, st_crs(object$data))
+  new_data <- sf::st_set_crs(new_data, sf::st_crs(object$data))
   
   # kriging prediction
   call <- rlang::quo(
@@ -279,14 +309,19 @@ kriging_predict <- function(object, new_data, type, ...) {
   
   pred_krige <- rlang::eval_tidy(call)
   
+  if (!is.null(object$trans)) {
+    pred_krige$var1.pred <-
+      backtr(pred_krige$var1.pred, object$trans, draw = FALSE)
+    pred_krige$var1.var <-
+      backtr(pred_krige$var1.var, object$trans, draw = FALSE)
+  }
+  
   # return predictions
   if (type == "numeric") {
     output <- new_data$trend + pred_krige$var1.pred
     
   } else if (type == "conf_int") {
-    
     prediction <- new_data$trend + pred_krige$var1.pred
-    
     output <- tibble::tibble(
       .pred_lower = prediction - (sqrt(pred_krige$var1.var) * 1.96),
       .pred_upper = prediction + (sqrt(pred_krige$var1.var) * 1.96)
@@ -297,33 +332,46 @@ kriging_predict <- function(object, new_data, type, ...) {
 }
 
 
-#' #' Multi_predict method for regression kriging model specification
-#' #'
-#' #' @param object A model object
-#' #' @param new_data sf object containing new_data to predict
-#' #' @param type character, 'numeric' or 'conf_int'
-#' #' @param neighbors integer, maximum number of closest points to use during
-#' #' prediction
-#' #' @param ... Currently unused
-#' #'
-#' #' @return
-#' #' @export
-#' multi_predict._kriging_rk <-
-#'   function(object, new_data, type = "numeric", neighbors = 16, ...) {
-#' 
-#'     args <- list2(...)
-#' 
-#'     if (any(names(enquos(...)) == "newdata"))
-#'       stop("Did you mean to use `new_data` instead of `newdata`?", call. = FALSE)
-#' 
-#'     pred <- kriging_predict(object$fit, new_data, type, neighbors = neighbors)
-#' 
-#'     if (type == "numeric") {
-#'       output = tibble::tibble(neighbors = neighbors, .pred = pred)
-#'     } else if (type == "conf_int") {
-#'       output = pred
-#'       output$neighbors <- neighbors
-#'     }
-#' 
-#'     output
-#'   }
+#' Parameter for logical parameter for normal score transform
+#'
+#' @return
+#' @export
+nscore <- function()  {
+  dials::new_qual_param(type = "logical",
+                        values = c(TRUE, FALSE),
+                        default = FALSE,
+                        label = c(nscore = "nscore"))
+}
+
+
+#' multi_predict method for krige_rk
+#'
+#' @param object  model_spec
+#' @param new_data data.frame
+#' @param type character specifying either "numeric" or "conf_int"
+#' @param neighbors integer specifying number of closest points to use in
+#' prediction.
+#' @param ... 
+#'
+#' @return output
+#' @export
+#' @importFrom parsnip multi_predict
+multi_predict._kriging_rk <-
+  function(object, new_data, type = "numeric", neighbors = 16, ...) {
+
+    args <- rlang::list2(...)
+
+    if (any(names(rlang::enquos(...)) == "newdata"))
+      stop("Did you mean to use `new_data` instead of `newdata`?", call. = FALSE)
+
+    pred <- kriging_predict(object$fit, new_data, type, neighbors = neighbors)
+
+    if (type == "numeric") {
+      output = tibble::tibble(neighbors = neighbors, .pred = pred)
+    } else if (type == "conf_int") {
+      output = pred
+      output$neighbors <- neighbors
+    }
+
+    output
+  }

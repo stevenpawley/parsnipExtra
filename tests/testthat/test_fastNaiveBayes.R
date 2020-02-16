@@ -1,8 +1,9 @@
 library(testthat)
 library(parsnip)
 library(discrim)
+library(fastNaiveBayes)
 
-iris_df <- as_tibble(iris)
+iris_df <- tibble::as_tibble(iris)
 
 fast_nb <- fastNaiveBayes(x = iris_df[, 1:4], y = iris_df[[5]])
 pkg_classes <- predict(fast_nb, newdata = iris_df[, 1:4], type = "class")

@@ -4,7 +4,27 @@
 \alias{update.kriging_rk}
 \title{Method to update a regression kriging model specification}
 \usage{
-\method{update}{kriging_rk}(object, parameters = NULL, neighbors = NULL, fresh = FALSE, ...)
+\method{update}{kriging_rk}(
+  object,
+  parameters = NULL,
+  neighbors = NULL,
+  nscore = NULL,
+  fresh = FALSE,
+  ...
+)
+}
+\arguments{
+\item{object}{model_spec}
+
+\item{parameters}{parameters}
+
+\item{neighbors}{integer}
+
+\item{nscore}{logical}
+
+\item{fresh}{logical}
+
+\item{...}{currently unused}
 }
 \description{
 Method to update a regression kriging model specification
