@@ -7,17 +7,29 @@
 backtr(scores, nscore, tails = "none", draw = TRUE)
 }
 \arguments{
-\item{scores}{a vector of normal scores and a normal score object (from nscore)}
+\item{scores}{a vector of normal scores and a normal score object (from
+nscore).}
 
-\item{nscore}{the nscore object}
+\item{nscore}{the nscore object.}
 
-\item{tails}{One major issue is how to extrapolate to the tails. Options}
+\item{tails}{One major issue is how to extrapolate to the tails. Options
+  other than none may result in dramatically incorrect tail estimates! tails
+  options:
+'none' : No extrapolation; more extreme score values will revert to the
+original min and max values.
+'equal' : Calculate magnitude in std deviations of the scores about initial
+data mean. Extrapolation is linear to these deviations. will be based upon
+deviations from the mean of the original hard data - possibly quite
+dangerous!
+'separate' :  This calculates a separate sd for values above and below the
+mean.}
 
-\item{draw}{show qq plot}
+\item{draw}{show qq plot.}
 }
 \value{
 numeric
 }
 \description{
-Given a vector of normal scores and a normal score object
+Given a vector of normal scores and a normal score object (from nscore), the
+function returns a vector of back-transformed values.
 }

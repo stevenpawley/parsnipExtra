@@ -7,15 +7,16 @@
 fnn_train(x, y = NULL, k = 1, algorithm = "kd_tree", ...)
 }
 \arguments{
-\item{x}{a data frame or matrix of predictors}
+\item{x}{a data frame or matrix of predictors.}
 
 \item{y}{a vector (factor or numeric) or matrix (numeric) of outcome data.}
 
 \item{k}{a vector (integer) of the number of neighbours to consider.}
 
-\item{algorithm}{character, one of c("kd_tree", "cover_tree", "brute"), default = "kd_tree"}
+\item{algorithm}{character, one of c("kd_tree", "cover_tree", "brute"),
+default = "kd_tree"}
 
-\item{...}{additional arguments to pass to FNN, currently unused}
+\item{...}{additional arguments to pass to FNN, currently unused.}
 }
 \value{
 list containing the FNN call

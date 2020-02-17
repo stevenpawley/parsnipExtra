@@ -2,23 +2,24 @@
 % Please edit documentation in R/kriging_gstat.R, R/nscore.R
 \name{nscore}
 \alias{nscore}
-\title{Parameter for logical parameter for normal score transform}
+\title{Parameter for logical parameter to perform normal score transformation}
 \usage{
 nscore(x)
 
 nscore(x)
 }
 \arguments{
-\item{x}{numeric, vector}
+\item{x}{numeric, vector.}
 }
 \value{
-
+A `qual_param` object.
 
 list
-nscore contains normal score transformed vector
-trn.table contains an ordered table of the original values for
-use with backtransformation
+nscore contains normal score transformed vector trn.table contains an ordered
+table of the original values for use with backtransformation
 }
 \description{
-Takes a vector of values x and calculates their normal scores. Returns
+Takes a vector of values x and calculates their normal scores. Returns a list
+with the scores and an ordered table of original values and scores, which is
+useful as a back-transform table. See `backtr()`.
 }

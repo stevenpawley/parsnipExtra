@@ -1,15 +1,14 @@
 #' Normal Score Transformation
 #'
-#' Takes a vector of values x and calculates their normal scores. Returns
-# a list with the scores and an ordered table of original values and
-# scores, which is useful as a back-transform table. See backtr().
+#' Takes a vector of values x and calculates their normal scores. Returns a list
+#' with the scores and an ordered table of original values and scores, which is
+#' useful as a back-transform table. See `backtr()`.
 #'
-#' @param x numeric, vector
+#' @param x numeric, vector.
 #'
 #' @return list
-#' nscore contains normal score transformed vector
-#' trn.table contains an ordered table of the original values for
-#' use with backtransformation
+#' nscore contains normal score transformed vector trn.table contains an ordered
+#' table of the original values for use with backtransformation
 #' @export
 nscore <- function(x) {
   nscore <- qqnorm(x, plot.it = FALSE)$x # normal score
@@ -21,23 +20,24 @@ nscore <- function(x) {
 
 #' Back transformation function
 #'
-#' Given a vector of normal scores and a normal score object
-# (from nscore), the function returns a vector of back-transformed
-# values.
-#' @param scores a vector of normal scores and a normal score object (from nscore)
-#' @param nscore the nscore object
+#' Given a vector of normal scores and a normal score object (from nscore), the
+#' function returns a vector of back-transformed values.
+#' 
+#' @param scores a vector of normal scores and a normal score object (from
+#'   nscore).
+#' @param nscore the nscore object.
 #' @param tails One major issue is how to extrapolate to the tails. Options
-# other than none may result in dramatically incorrect tail estimates!
-# tails options:
-# 'none' : No extrapolation; more extreme score values will revert
-# to the original min and max values.
-# 'equal' : Calculate magnitude in std deviations of the scores about
-# initial data mean. Extrapolation is linear to these deviations.
-# will be based upon deviations from the mean of the original
-# hard data - possibly quite dangerous!
-# 'separate' :  This calculates a separate sd for values
-# above and below the mean.
-#' @param draw show qq plot
+#'   other than none may result in dramatically incorrect tail estimates! tails
+#'   options:
+#' 'none' : No extrapolation; more extreme score values will revert to the
+#' original min and max values.
+#' 'equal' : Calculate magnitude in std deviations of the scores about initial
+#' data mean. Extrapolation is linear to these deviations. will be based upon
+#' deviations from the mean of the original hard data - possibly quite
+#' dangerous!
+#' 'separate' :  This calculates a separate sd for values above and below the
+#' mean.
+#' @param draw show qq plot.
 #'
 #' @return numeric
 #' @export

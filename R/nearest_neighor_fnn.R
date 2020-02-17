@@ -122,11 +122,12 @@ add_fnn_engine <- function() {
 #'
 #' `fnn_train` is a wrapper for `FNN` fast nearest neighbor models
 #'
-#' @param x a data frame or matrix of predictors
+#' @param x a data frame or matrix of predictors.
 #' @param y a vector (factor or numeric) or matrix (numeric) of outcome data.
 #' @param k a vector (integer) of the number of neighbours to consider.
-#' @param algorithm character, one of c("kd_tree", "cover_tree", "brute"), default = "kd_tree"
-#' @param ... additional arguments to pass to FNN, currently unused
+#' @param algorithm character, one of c("kd_tree", "cover_tree", "brute"),
+#'   default = "kd_tree"
+#' @param ... additional arguments to pass to FNN, currently unused.
 #'
 #' @return list containing the FNN call
 #' @export
@@ -162,12 +163,13 @@ fnn_train <- function(x, y = NULL, k = 1, algorithm = "kd_tree", ...) {
 #'
 #' `fnn_pred` is a wrapper for `FNN` fast nearest neighbor models
 #'
-#' @param object parsnip model spec
-#' @param newdata data.frame or matrix of training data
-#' @param prob logical return predicted probability of the winning class, default = FALSE
-#' @param ... additional arguments to pass to FNN, currently unused
+#' @param object parsnip model spec.
+#' @param newdata data.frame or matrix of training data.
+#' @param prob logical return predicted probability of the winning class,
+#'   default = FALSE.
+#' @param ... additional arguments to pass to FNN, currently unused.
 #'
-#' @return data.frame containing the predicted rsults
+#' @return data.frame containing the predicted results.
 #' @export
 fnn_pred <- function(object, newdata, prob = FALSE, ...) {
   

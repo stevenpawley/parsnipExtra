@@ -18,7 +18,7 @@ add_kriging_rk <- function() {
     eng = "gstat"
   )
   
-  # define model arguments and their mapping to parsnip nomenclature
+  # define model arguments
   parsnip::set_model_arg(
     model = "kriging_rk",
     eng = "gstat",
@@ -36,7 +36,7 @@ add_kriging_rk <- function() {
     has_submodel = FALSE
   )
   
-  # fit function for regression
+  # fit functions
   parsnip::set_fit(
     model = "kriging_rk",
     eng = "gstat",
@@ -49,7 +49,7 @@ add_kriging_rk <- function() {
     )
   )
   
-  # prediction function for regression
+  # prediction functions
   parsnip::set_pred(
     model = "kriging_rk",
     eng = "gstat",
@@ -66,8 +66,6 @@ add_kriging_rk <- function() {
       )
     )
   )
-  
-  # prediction function for conf_int
   parsnip::set_pred(
     model = "kriging_rk",
     eng = "gstat",
@@ -90,10 +88,12 @@ add_kriging_rk <- function() {
 
 #' Regression kriging model specification
 #'
-#' @param mode character, only 'regression' is currently implemented
-#' @param neighbors integer, maximum number of points to use in neighborhood
-#' @param nscore, logical optionally transform and backtransform data using a
-#'   normal score transform
+#' @param mode A character specifying the mode of the model. Only 'regression'
+#'   is currently implemented.
+#' @param neighbors An integer specifying the maximum number of points to use in
+#'   neighborhood.
+#' @param nscore A logical to optionally transform and backtransform data using
+#'   a normal score transform. Default is FALSE.
 #'
 #' @return NULL
 #' @export
@@ -114,8 +114,8 @@ kriging_rk <- function(mode = "regression", neighbors = NULL, nscore = FALSE) {
 
 #' Print generic function method for regression kriging model
 #'
-#' @param x A model object
-#' @param ... Not currently used
+#' @param x A model object.
+#' @param ... Not currently used.
 #'
 #' @return NULL
 #' @export
@@ -134,12 +134,14 @@ print.kriging_rk <- function(x, ...) {
 
 #' Method to update a regression kriging model specification
 #'
-#' @param object model_spec
-#' @param parameters parameters
-#' @param neighbors integer 
-#' @param nscore logical
-#' @param fresh logical
-#' @param ... currently unused
+#' @param object A model_spec.
+#' @param parameters The parameters for the model
+#' @param neighbors An integer specifying the maximum number of points to use in
+#'   neighborhood.
+#' @param nscore A logical to optionally transform and backtransform data using
+#'   a normal score transform. Default is FALSE.
+#' @param fresh A logical.
+#' @param ... Currently unused.
 #'
 #' @export
 update.kriging_rk <-
@@ -186,11 +188,12 @@ update.kriging_rk <-
 
 #' Regression Kriging
 #'
-#' @param formula formula
-#' @param data sf object containing sfc points features
-#' @param nscore logical, whether to transform the training data using a normal
+#' @param formula A formula object.
+#' @param data An sf object containing sfc points features.
+#' @param nscore A logical, whether to transform the training data using a normal
 #'   score transform.
-#' @param ... arguments to pass onto the automap::autofitVariogram function
+#' @param ... Other arguments to pass onto the automap::autofitVariogram
+#'   function.
 #'
 #' @return kriging_rk class object
 #' @export
@@ -278,10 +281,10 @@ kriging_train <- function(formula, data, nscore = FALSE, ...) {
 
 #' Predict function for regression kriging
 #'
-#' @param object kriging_rk class object.
-#' @param new_data sf object, or SpatialGridDataFrame.
-#' @param type "numeric" or "conf_int".
-#' @param ... other arguments passed to gstat::krige function
+#' @param object A kriging_rk class object.
+#' @param new_data An sf object or a SpatialGridDataFrame.
+#' @param type A character with either "numeric" or "conf_int".
+#' @param ... Other arguments passed to gstat::krige function.
 #'
 #' @return
 #' @export
@@ -332,9 +335,9 @@ kriging_predict <- function(object, new_data, type, ...) {
 }
 
 
-#' Parameter for logical parameter for normal score transform
+#' Parameter for logical parameter to perform normal score transformation
 #'
-#' @return
+#' @return A `qual_param` object.
 #' @export
 nscore <- function()  {
   dials::new_qual_param(type = "logical",
@@ -344,16 +347,16 @@ nscore <- function()  {
 }
 
 
-#' multi_predict method for krige_rk
+#' `multi_predict`` method for krige_rk
 #'
-#' @param object  model_spec
-#' @param new_data data.frame
-#' @param type character specifying either "numeric" or "conf_int"
-#' @param neighbors integer specifying number of closest points to use in
+#' @param object A model_spec.
+#' @param new_data A data.frame.
+#' @param type A character specifying either "numeric" or "conf_int".
+#' @param neighbors An integer specifying number of closest points to use in
 #' prediction.
-#' @param ... 
+#' @param ... Currently unused.
 #'
-#' @return output
+#' @return A tibble with the prediction results.
 #' @export
 #' @importFrom parsnip multi_predict
 multi_predict._kriging_rk <-

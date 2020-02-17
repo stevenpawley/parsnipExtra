@@ -7,12 +7,14 @@
 kriging_rk(mode = "regression", neighbors = NULL, nscore = FALSE)
 }
 \arguments{
-\item{mode}{character, only 'regression' is currently implemented}
+\item{mode}{A character specifying the mode of the model. Only 'regression'
+is currently implemented.}
 
-\item{neighbors}{integer, maximum number of points to use in neighborhood}
+\item{neighbors}{An integer specifying the maximum number of points to use in
+neighborhood.}
 
-\item{nscore, }{logical optionally transform and backtransform data using a
-normal score transform}
+\item{nscore}{A logical to optionally transform and backtransform data using
+a normal score transform. Default is FALSE.}
 }
 \description{
 Regression kriging model specification

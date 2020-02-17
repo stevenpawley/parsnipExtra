@@ -14,17 +14,19 @@
 )
 }
 \arguments{
-\item{object}{model_spec}
+\item{object}{A model_spec.}
 
-\item{parameters}{parameters}
+\item{parameters}{The parameters for the model}
 
-\item{neighbors}{integer}
+\item{neighbors}{An integer specifying the maximum number of points to use in
+neighborhood.}
 
-\item{nscore}{logical}
+\item{nscore}{A logical to optionally transform and backtransform data using
+a normal score transform. Default is FALSE.}
 
-\item{fresh}{logical}
+\item{fresh}{A logical.}
 
-\item{...}{currently unused}
+\item{...}{Currently unused.}
 }
 \description{
 Method to update a regression kriging model specification

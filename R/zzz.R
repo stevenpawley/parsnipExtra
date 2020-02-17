@@ -4,4 +4,3 @@
   add_kriging_rk()
   add_fastNaiveBayes_engine()
 }
-

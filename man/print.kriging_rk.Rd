@@ -7,9 +7,9 @@
 \method{print}{kriging_rk}(x, ...)
 }
 \arguments{
-\item{x}{A model object}
+\item{x}{A model object.}
 
-\item{...}{Not currently used}
+\item{...}{Not currently used.}
 }
 \description{
 Print generic function method for regression kriging model

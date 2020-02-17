@@ -7,14 +7,15 @@
 kriging_train(formula, data, nscore = FALSE, ...)
 }
 \arguments{
-\item{formula}{formula}
+\item{formula}{A formula object.}
 
-\item{data}{sf object containing sfc points features}
+\item{data}{An sf object containing sfc points features.}
 
-\item{nscore}{logical, whether to transform the training data using a normal
+\item{nscore}{A logical, whether to transform the training data using a normal
 score transform.}
 
-\item{...}{arguments to pass onto the automap::autofitVariogram function}
+\item{...}{Other arguments to pass onto the automap::autofitVariogram
+function.}
 }
 \value{
 kriging_rk class object

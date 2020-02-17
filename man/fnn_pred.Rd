@@ -7,16 +7,17 @@
 fnn_pred(object, newdata, prob = FALSE, ...)
 }
 \arguments{
-\item{object}{parsnip model spec}
+\item{object}{parsnip model spec.}
 
-\item{newdata}{data.frame or matrix of training data}
+\item{newdata}{data.frame or matrix of training data.}
 
-\item{prob}{logical return predicted probability of the winning class, default = FALSE}
+\item{prob}{logical return predicted probability of the winning class,
+default = FALSE.}
 
-\item{...}{additional arguments to pass to FNN, currently unused}
+\item{...}{additional arguments to pass to FNN, currently unused.}
 }
 \value{
-data.frame containing the predicted rsults
+data.frame containing the predicted results.
 }
 \description{
 `fnn_pred` is a wrapper for `FNN` fast nearest neighbor models

@@ -3,14 +3,12 @@
 #'
 #' @return NULL
 #' @export
-#' @importFrom parsnip set_model_engine set_dependency set_model_arg set_fit
-#' set_pred
 add_liquidSVM_engine <- function() {
-  set_model_engine("svm_rbf", "classification", "liquidSVM")
-  set_model_engine("svm_rbf", "regression", "liquidSVM")
-  set_dependency("svm_rbf", "liquidSVM", "liquidSVM")
+  parsnip::set_model_engine("svm_rbf", "classification", "liquidSVM")
+  parsnip::set_model_engine("svm_rbf", "regression", "liquidSVM")
+  parsnip::set_dependency("svm_rbf", "liquidSVM", "liquidSVM")
   
-  set_model_arg(
+  parsnip::set_model_arg(
     model = "svm_rbf",
     eng = "liquidSVM",
     parsnip = "cost",
@@ -18,8 +16,7 @@ add_liquidSVM_engine <- function() {
     func = list(pkg = "dials", fun = "cost"),
     has_submodel = FALSE
   )
-  
-  set_model_arg(
+  parsnip::set_model_arg(
     model = "svm_rbf",
     eng = "liquidSVM",
     parsnip = "rbf_sigma",
@@ -27,8 +24,7 @@ add_liquidSVM_engine <- function() {
     func = list(pkg = "dials", fun = "rbf_sigma"),
     has_submodel = FALSE
   )
-  
-  set_model_arg(
+  parsnip::set_model_arg(
     model = "svm_rbf",
     eng = "liquidSVM",
     parsnip = "margin",
@@ -36,8 +32,7 @@ add_liquidSVM_engine <- function() {
     func = list(pkg = "dials", fun = "margin"),
     has_submodel = FALSE
   )
-  
-  set_fit(
+  parsnip::set_fit(
     model = "svm_rbf",
     eng = "liquidSVM",
     mode = "regression",
@@ -48,8 +43,7 @@ add_liquidSVM_engine <- function() {
       defaults = list(folds = 5)
     )
   )
-  
-  set_fit(
+  parsnip::set_fit(
     model = "svm_rbf",
     eng = "liquidSVM",
     mode = "classification",
@@ -60,8 +54,7 @@ add_liquidSVM_engine <- function() {
       defaults = list(folds = 5)
     )
   )
-  
-  set_pred(
+  parsnip::set_pred(
     model = "svm_rbf",
     eng = "liquidSVM",
     mode = "regression",
@@ -77,8 +70,7 @@ add_liquidSVM_engine <- function() {
         )
     )
   )
-  
-  set_pred(
+  parsnip::set_pred(
     model = "svm_rbf",
     eng = "liquidSVM",
     mode = "regression",
@@ -92,8 +84,7 @@ add_liquidSVM_engine <- function() {
         newdata = quote(new_data))
     )
   )
-  
-  set_pred(
+  parsnip::set_pred(
     model = "svm_rbf",
     eng = "liquidSVM",
     mode = "classification",
@@ -109,8 +100,7 @@ add_liquidSVM_engine <- function() {
         )
     )
   )
-  
-  set_pred(
+  parsnip::set_pred(
     model = "svm_rbf",
     eng = "liquidSVM",
     mode = "classification",
@@ -136,8 +126,7 @@ add_liquidSVM_engine <- function() {
         )
     )
   )
-  
-  set_pred(
+  parsnip::set_pred(
     model = "svm_rbf",
     eng = "liquidSVM",
     mode = "classification",
