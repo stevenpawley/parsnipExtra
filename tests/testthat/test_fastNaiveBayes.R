@@ -1,7 +1,5 @@
 library(testthat)
 library(parsnip)
-library(discrim)
-library(fastNaiveBayes)
 
 iris_df <- tibble::as_tibble(iris)
 
@@ -10,6 +8,12 @@ pkg_classes <- predict(fast_nb, newdata = iris_df[, 1:4], type = "class")
 pkg_probs <- predict(fast_nb, newdata = iris_df[, 1:4], type = "raw")
 
 test_that('fastNaiveBayes execution', {
+  
+  skip_if_not_installed("discrim")
+  skip_if_not_installed("fastNaiveBayes")
+  
+  library(discrim)
+  library(fastNaiveBayes)
   
   nb <- naive_Bayes() %>%
     set_engine("fastNaiveBayes")

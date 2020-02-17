@@ -17,6 +17,7 @@ Imports:
     liquidSVM,
     FNN,
     fastNaiveBayes,
+    neuralnet,
     discrim,
     automap,
     gstat,

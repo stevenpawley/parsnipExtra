@@ -1,17 +1,25 @@
 library(testthat)
 library(rlang)
-library(sf)
-library(gstat)
 library(parsnip)
-
-# use gstat meuse dataset
-data(meuse.all)
-meuse.sf <- st_as_sf(meuse.all, coords = c("x", "y"))
 
 test_that('krige_rk execution', {
   
+  skip_if_not_installed("gstat")
+  skip_if_not_installed("automap")
+  skip_if_not_installed("sf")
+  
+  library(sf)
+  library(gstat)
+  library(automap)
+  
+  data(meuse.all)
+  meuse.sf <- st_as_sf(meuse.all, coords = c("x", "y"))
+  
   # test fitting
-  krige_regr <- kriging_rk(mode = "regression", neighbors = 16, nscore = TRUE) %>%
+  krige_regr <-
+    kriging_rk(mode = "regression",
+               neighbors = 16,
+               nscore = TRUE) %>%
     set_engine("gstat", fix.values = c(2, NA, NA))
   
   fitted <- fit(krige_regr, cadmium ~ elev + dist.m, meuse.sf)
@@ -29,7 +37,8 @@ test_that('krige_rk execution', {
   expect_equal(names(preds_conf_int), c(".pred_lower", ".pred_upper"))
   
   # test multi_predict numeric
-  preds_multi_numeric <- parsnip::multi_predict(fitted, new_data = meuse.sf, neighbors = 4)
+  preds_multi_numeric <-
+    parsnip::multi_predict(fitted, new_data = meuse.sf, neighbors = 4)
   expect_s3_class(preds_multi_numeric, "tbl_df")
   expect_equal(names(preds_multi_numeric), c("neighbors", ".pred"))
 
