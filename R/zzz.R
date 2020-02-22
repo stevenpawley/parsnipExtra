@@ -4,4 +4,5 @@
   add_kriging_rk()
   add_fastNaiveBayes_engine()
   add_neuralnet_engine()
+  add_baggedSVM_engine()
 }

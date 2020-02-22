@@ -4,12 +4,14 @@
 \alias{kriging_train}
 \title{Regression Kriging}
 \usage{
-kriging_train(formula, data, nscore = FALSE, ...)
+kriging_train(formula, data, nmax, nscore = FALSE, ...)
 }
 \arguments{
 \item{formula}{A formula object.}
 
 \item{data}{An sf object containing sfc points features.}
+
+\item{nmax}{Integer, number of neighbors to use in prediction.}
 
 \item{nscore}{A logical, whether to transform the training data using a normal
 score transform.}

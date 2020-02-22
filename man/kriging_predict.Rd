@@ -4,7 +4,7 @@
 \alias{kriging_predict}
 \title{Predict function for regression kriging}
 \usage{
-kriging_predict(object, new_data, type, ...)
+kriging_predict(object, new_data, type, nmax, ...)
 }
 \arguments{
 \item{object}{A kriging_rk class object.}
@@ -12,6 +12,8 @@ kriging_predict(object, new_data, type, ...)
 \item{new_data}{An sf object or a SpatialGridDataFrame.}
 
 \item{type}{A character with either "numeric" or "conf_int".}
+
+\item{nmax}{Integer, number of closest points to use in prediction.}
 
 \item{...}{Other arguments passed to gstat::krige function.}
 }

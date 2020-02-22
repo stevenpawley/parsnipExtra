@@ -4,7 +4,7 @@
 \alias{multi_predict._kriging_rk}
 \title{`multi_predict`` method for krige_rk}
 \usage{
-\method{multi_predict}{`_kriging_rk`}(object, new_data, type = "numeric", neighbors = 16, ...)
+\method{multi_predict}{`_kriging_rk`}(object, new_data, type = "numeric", neighbors, ...)
 }
 \arguments{
 \item{object}{A model_spec.}

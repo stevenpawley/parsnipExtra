@@ -4,7 +4,7 @@
 \alias{kriging_rk}
 \title{Regression kriging model specification}
 \usage{
-kriging_rk(mode = "regression", neighbors = NULL, nscore = FALSE)
+kriging_rk(mode = "regression", neighbors = NULL)
 }
 \arguments{
 \item{mode}{A character specifying the mode of the model. Only 'regression'
@@ -12,9 +12,6 @@ is currently implemented.}
 
 \item{neighbors}{An integer specifying the maximum number of points to use in
 neighborhood.}
-
-\item{nscore}{A logical to optionally transform and backtransform data using
-a normal score transform. Default is FALSE.}
 }
 \description{
 Regression kriging model specification

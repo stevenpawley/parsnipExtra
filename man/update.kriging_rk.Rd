@@ -4,14 +4,7 @@
 \alias{update.kriging_rk}
 \title{Method to update a regression kriging model specification}
 \usage{
-\method{update}{kriging_rk}(
-  object,
-  parameters = NULL,
-  neighbors = NULL,
-  nscore = NULL,
-  fresh = FALSE,
-  ...
-)
+\method{update}{kriging_rk}(object, parameters = NULL, neighbors = NULL, fresh = FALSE, ...)
 }
 \arguments{
 \item{object}{A model_spec.}
@@ -20,9 +13,6 @@
 
 \item{neighbors}{An integer specifying the maximum number of points to use in
 neighborhood.}
-
-\item{nscore}{A logical to optionally transform and backtransform data using
-a normal score transform. Default is FALSE.}
 
 \item{fresh}{A logical.}
 
