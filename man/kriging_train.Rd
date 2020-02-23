@@ -9,7 +9,7 @@ kriging_train(formula, data, nmax, nscore = FALSE, ...)
 \arguments{
 \item{formula}{A formula object.}
 
-\item{data}{An sf object containing sfc points features.}
+\item{data}{An data.frame object that includes "x" and "y" columns.}
 
 \item{nmax}{Integer, number of neighbors to use in prediction.}
 

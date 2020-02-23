@@ -206,7 +206,7 @@ kriging_train <- function(formula, data, nmax, nscore = FALSE, ...) {
   # select response variable
   response <- as.character(rlang::f_lhs(formula))
   
-  # nscore
+  # normal score transformation
   if (isTRUE(nscore)) {
     trans <- nscore(data[[response]])
     data[[response]] <- trans$nscore
@@ -233,15 +233,17 @@ kriging_train <- function(formula, data, nmax, nscore = FALSE, ...) {
     fit_args <- args
   }
   
-  # regression
+  # regression on data.frame
   regr_trend_model <- stats::lm(formula = formula, data = data)
   data$trend <- stats::predict(regr_trend_model, data)
   data$residual <- stats::residuals(regr_trend_model)
   
-  # autofit variogram on residuals
+  # make sf object of x, y and residuals
   data <- data[, names(data) != response]
   data <- sf::st_as_sf(data, coords = c("x", "y"))
+  data <- data[, "residual"]
   
+  # autofit variogram on residuals
   fit_call <- rlang::quo(
     rlang::exec(
       automap::autofitVariogram,
@@ -282,6 +284,7 @@ kriging_predict <- function(object, new_data, type, nmax, ...) {
 
   # convert to spatial object
   new_data <- sf::st_as_sf(new_data, coords = c("x", "y"))
+  new_data <- new_data[, c("trend", "geometry")]
 
   args <- list(
     formula = residual ~ 1,
@@ -297,16 +300,12 @@ kriging_predict <- function(object, new_data, type, nmax, ...) {
   call <- parsnip:::make_call("krige", ns = "gstat", args = args)
   pred_krige <- rlang::eval_tidy(call)
   
-  if (!is.null(object$trans)) {
-    pred_krige$var1.pred <-
-      backtr(pred_krige$var1.pred, object$trans, draw = FALSE)
-    pred_krige$var1.var <-
-      backtr(pred_krige$var1.var, object$trans, draw = FALSE)
-  }
-  
   # return predictions
   if (type == "numeric") {
     output <- new_data$trend + pred_krige$var1.pred
+    
+    if (!is.null(object$trans))
+      output <- backtr(output, object$trans, draw = FALSE)
     
   } else if (type == "conf_int") {
     prediction <- new_data$trend + pred_krige$var1.pred
@@ -314,6 +313,11 @@ kriging_predict <- function(object, new_data, type, nmax, ...) {
       .pred_lower = prediction - (sqrt(pred_krige$var1.var) * 1.96),
       .pred_upper = prediction + (sqrt(pred_krige$var1.var) * 1.96)
     )
+    
+    if (!is.null(object$trans)) {
+      output$.pred_lower <- backtr(output$.pred_lower, object$trans, draw = FALSE)
+      output$.pred_upper <- backtr(output$.pred_upper, object$trans, draw = FALSE)
+    }
   }
   
   output
