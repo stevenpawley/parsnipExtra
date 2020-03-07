@@ -10,21 +10,13 @@ Encoding: UTF-8
 LazyData: true
 Imports:
     parsnip,
-    rsample,
     rlang,
-    purrr,
-    furrr,
-    future,
-    abind,
     tibble,
     liquidSVM,
     FNN,
     fastNaiveBayes,
     neuralnet,
-    discrim,
-    automap,
-    gstat,
-    sf
+    discrim
 RoxygenNote: 7.0.2
 Suggests: 
     testthat

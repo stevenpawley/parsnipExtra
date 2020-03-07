@@ -1,5 +1,6 @@
 library(testthat)
 library(parsnip)
+library(fastNaiveBayes)
 
 iris_df <- tibble::as_tibble(iris)
 
