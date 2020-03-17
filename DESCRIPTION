@@ -16,7 +16,9 @@ Imports:
     FNN,
     fastNaiveBayes,
     neuralnet,
-    discrim
+    discrim,
+    furrr,
+    rsample
 RoxygenNote: 7.0.2
 Suggests: 
     testthat

@@ -3,4 +3,5 @@
   add_liquidSVM_engine()
   add_fastNaiveBayes_engine()
   add_neuralnet_engine()
+  make_bagging()
 }
