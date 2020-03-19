@@ -141,10 +141,11 @@ make_bagging <- function() {
 #' @param formula A formula object.
 #' @param data A data.frame of training data.
 #' @param mode A character specifying "classification" or "regression".
+#' @param base_model The parsnip model specification to use as the base model in
+#'   the bagging ensemble.
 #' @param mtry The dials::mtry parameters.
 #' @param trees The dials::trees parameter.
 #' @param sample_prop The dials::sample_prop parameter.
-#' @param model The base model specification to use in the bagging ensemble.
 #' @param .opt Additional future_options to use for multiprocessing.
 #' @param ... Currently unused.
 #'
@@ -154,37 +155,47 @@ bagging_train <-
   function(formula,
            data,
            mode,
+           base_model = NULL,
            mtry = NULL,
            trees = 10,
            sample_prop = 0.67,
-           model = NULL,
            .opts = furrr::future_options(),
            ...) {
     
     others <- list(...)
+    
+    # extract terms
+    X <- attr(stats::terms(formula, data = data), "term.labels")
+    y <- all.vars(formula)[1]
+    X <- setdiff(X, y)
 
-    # create partitions
+    if (is.null(mtry))
+      mtry <- length(X)
+    
+    # create bootstrap resamples of observations
     resamples <- rsample::mc_cv(data, prop = sample_prop, times = trees)
     
     # fit partitions
     resamples$models <-
-      furrr::future_map(
-        resamples$splits,
-        ~ parsnip::fit(
-          object = model,
-          formula = formula,
-          data = rsample::assessment(.x)
-        ), 
-        .options = .opts
-      )
-    
+      furrr::future_map(resamples$splits, fit_func, base_model, X, y, mtry,
+                        .options = .opts)
     
     fitted_models <- resamples$models
     names(fitted_models) <- paste("bag", seq_len(length(fitted_models)), sep = "_")
     fitted_models$.opts <- .opts
     
     fitted_models
-  }
+}
+
+
+fit_func <- function(rsplit, base_model, X, y, mtry) {
+  train_data <- rsample::assessment(rsplit)
+  
+  X_selected <- X[runif(mtry, 1, length(X))]
+  f <- as.formula(paste(y, "~", paste(X_selected, collapse = " + ")))
+  
+  parsnip::fit(object = base_model, formula = f, data = train_data) 
+}
 
 
 #' Prediction method for bagging

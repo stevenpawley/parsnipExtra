@@ -8,10 +8,10 @@ bagging_train(
   formula,
   data,
   mode,
+  base_model = NULL,
   mtry = NULL,
   trees = 10,
   sample_prop = 0.67,
-  model = NULL,
   .opts = furrr::future_options(),
   ...
 )
@@ -23,13 +23,14 @@ bagging_train(
 
 \item{mode}{A character specifying "classification" or "regression".}
 
+\item{base_model}{The parsnip model specification to use as the base model in
+the bagging ensemble.}
+
 \item{mtry}{The dials::mtry parameters.}
 
 \item{trees}{The dials::trees parameter.}
 
 \item{sample_prop}{The dials::sample_prop parameter.}
-
-\item{model}{The base model specification to use in the bagging ensemble.}
 
 \item{...}{Currently unused.}
 

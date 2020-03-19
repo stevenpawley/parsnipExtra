@@ -2,7 +2,7 @@
 % Please edit documentation in R/bagging_data.R
 \name{bagging_predict}
 \alias{bagging_predict}
-\title{Prediction mething for bagging}
+\title{Prediction method for bagging}
 \usage{
 bagging_predict(object, newdata, type, ...)
 }
@@ -20,5 +20,5 @@ bagging_predict(object, newdata, type, ...)
 Prediction results
 }
 \description{
-Prediction mething for bagging
+Prediction method for bagging
 }

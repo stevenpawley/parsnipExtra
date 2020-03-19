@@ -24,14 +24,6 @@ add_liquidSVM_engine <- function() {
     func = list(pkg = "dials", fun = "rbf_sigma"),
     has_submodel = FALSE
   )
-  parsnip::set_model_arg(
-    model = "svm_rbf",
-    eng = "liquidSVM",
-    parsnip = "margin",
-    original = "epsilon",
-    func = list(pkg = "dials", fun = "margin"),
-    has_submodel = FALSE
-  )
   parsnip::set_fit(
     model = "svm_rbf",
     eng = "liquidSVM",
@@ -39,8 +31,11 @@ add_liquidSVM_engine <- function() {
     value = list(
       interface = "matrix",
       protect = c("x", "y"),
-      func = c(pkg = "liquidSVM", fun = "svm"),
-      defaults = list(folds = 5)
+      func = c(fun = "train_liquid"),
+      defaults = list(
+        folds = 1,
+        threads = 0
+      )
     )
   )
   parsnip::set_fit(
@@ -50,8 +45,11 @@ add_liquidSVM_engine <- function() {
     value = list(
       interface = "matrix",
       protect = c("x", "y"),
-      func = c(pkg = "liquidSVM", fun = "svm"),
-      defaults = list(folds = 5)
+      func = c(fun = "train_liquid"),
+      defaults = list(
+        folds = 1,
+        threads = 0
+      )
     )
   )
   parsnip::set_pred(
@@ -140,4 +138,35 @@ add_liquidSVM_engine <- function() {
         newdata = quote(new_data))
     )
   )
+}
+
+#' Wrapper to train the `liquidSVM` engine
+#'
+#' @param x A matrix of training data/
+#' @param y A vector of response data.
+#' @param lambdas A numeric with the amount of regularization.
+#' @param gammas A numeric with the bandwidth of the gaussian kernel.
+#' @param ... Other engine arguments.
+#'
+#' @return
+#' @export
+train_liquid <- function(x, y, lambdas, gammas, ...) {
+
+  others <- list(...)
+
+  args <- list(
+    x = expr(x),
+    y = expr(y),
+    lambdas = expr(lambdas),
+    gammas = rlang::quo(1 / !!gammas)
+  )
+
+  call <- rlang::call2(.fn = "svm", .ns = "liquidSVM", !!!args)
+
+  if (any(sapply(others, is.null)))
+    others <- others[!sapply(others, is.null)]
+  
+  call <- rlang::call_modify(call, !!!others)
+
+  rlang::eval_tidy(call)
 }

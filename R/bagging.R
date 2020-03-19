@@ -1,6 +1,8 @@
 #' General interface for bagging models
 #'
 #' @param mode A single character string for the type of model.
+#' @param base_model The parsnip model specification to use as the base model in
+#'   the bagging ensemble.
 #' @param mtry The number of predictors that will be randomly sampled for each
 #'   model in the bagging ensemble.
 #' @param trees The number of bagging models in the ensemble.
@@ -12,11 +14,13 @@
 #' @export
 bagging <-
   function(mode = "classification",
+           base_model = NULL,
            mtry = NULL,
            trees = 10,
            sample_prop = 0.67) {
     
     args <- list(
+      base_model = rlang::enquo(base_model),
       mtry = rlang::enquo(mtry),
       trees = rlang::enquo(trees),
       sample_prop = rlang::enquo(sample_prop)
@@ -46,6 +50,8 @@ print.bagging <- function(x, ...) {
 }
 
 #' @param object A bagging model specification.
+#' @param base_model The parsnip model specification to use as the base model in
+#'   the bagging ensemble.
 #' @param mtry The number of predictors that will be randomly sampled for each
 #'   model in the bagging ensemble.
 #' @param trees The number of bagging models in the ensemble.
@@ -57,12 +63,15 @@ print.bagging <- function(x, ...) {
 #' @export
 update.bagging <-
   function(object,
+           base_model = NULL,
            mtry = NULL,
            trees = NULL,
            sample_size = NULL,
            fresh = FALSE, ...) {
     update_dot_check(...)
+    
     args <- list(
+      base_model = enquo(base_model),
       mtry = enquo(mtry),
       trees = enquo(trees),
       sample_prop = enquo(sample_prop)

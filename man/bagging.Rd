@@ -4,10 +4,19 @@
 \alias{bagging}
 \title{General interface for bagging models}
 \usage{
-bagging(mode = "classification", mtry = NULL, trees = 10, sample_prop = 0.67)
+bagging(
+  mode = "classification",
+  base_model = NULL,
+  mtry = NULL,
+  trees = 10,
+  sample_prop = 0.67
+)
 }
 \arguments{
 \item{mode}{A single character string for the type of model.}
+
+\item{base_model}{The parsnip model specification to use as the base model in
+the bagging ensemble.}
 
 \item{mtry}{The number of predictors that will be randomly sampled for each
 model in the bagging ensemble.}
