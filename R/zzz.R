@@ -4,4 +4,5 @@
   add_fastNaiveBayes_engine()
   add_neuralnet_engine()
   make_bagging()
+  make_ensemble()
 }
