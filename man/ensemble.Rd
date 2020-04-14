@@ -4,7 +4,7 @@
 \alias{ensemble}
 \title{General interface for a stacked ensemble of models}
 \usage{
-ensemble(mode = "classification")
+ensemble(mode = "unknown")
 }
 \arguments{
 \item{mode}{A single character string for the type of model.}
