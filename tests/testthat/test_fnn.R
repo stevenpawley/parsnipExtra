@@ -5,8 +5,6 @@ library(rlang)
 # ------------------------------------------------------------------------------
 
 num_pred <- c("Sepal.Width", "Petal.Width", "Petal.Length")
-iris_bad_form <- as.formula(Species ~ term)
-iris_basic <- nearest_neighbor(neighbors = 8) %>% set_engine("FNN")
 clf_ind <- c(1, 51, 101, 25)
 
 ctrl <- fit_control(verbosity = 1, catch = FALSE)
@@ -23,34 +21,28 @@ test_that('FNN execution', {
   # continuous
   # expect no error
   expect_error(
-    fit_xy(
-      iris_basic,
-      control = ctrl,
-      x = iris[, num_pred],
-      y = iris$Sepal.Length
-    ),
+    nearest_neighbor(neighbors = 8) %>% 
+      set_engine("FNN") %>%
+      set_mode("regression") %>%
+      fit_xy(control = ctrl, x = iris[, num_pred],y = iris$Sepal.Length),
     regexp = NA
   )
   
   # nominal
   # expect no error
   expect_error(
-    fit_xy(
-      iris_basic,
-      control = ctrl,
-      x = iris[, c("Sepal.Length", "Petal.Width")],
-      y = iris$Species
-    ),
+    nearest_neighbor(neighbors = 8) %>% 
+      set_engine("FNN") %>%
+      set_mode("regression") %>%
+      fit_xy(control = ctrl, x = iris[, c("Sepal.Length", "Petal.Width")], y = iris$Species),
     regexp = NA
   )
   
   expect_error(
-    fit(
-      iris_basic,
-      iris_bad_form,
-      data = iris,
-      control = ctrl
-    )
+    nearest_neighbor(neighbors = 8) %>% 
+      set_engine("FNN") %>%
+      set_mode("regression") %>%
+      fit(as.formula(Species ~ term), data = iris, control = ctrl)
   )
   
 })
@@ -60,12 +52,10 @@ test_that('FNN prediction', {
   skip_if_not_installed("FNN")
   
   # regression
-  reg_xy <- fit_xy(
-    iris_basic,
-    control = ctrl,
-    x = iris[, num_pred],
-    y = iris$Sepal.Length
-  )
+  reg_xy <- nearest_neighbor(neighbors = 8) %>% 
+    set_engine("FNN") %>%
+    set_mode("regression") %>%
+    fit_xy(control = ctrl, x = iris[, num_pred], y = iris$Sepal.Length)
   
   reg_xy_pred <- predict(reg_xy, iris[1:5, num_pred])
   
@@ -74,17 +64,16 @@ test_that('FNN prediction', {
     y = iris$Sepal.Length,
     k = 8,
     test = iris[1:5, num_pred]
-  )[["pred"]]
+  )
+  reg_fnn_pred <- reg_fnn_pred[["pred"]]
   
   expect_equal(reg_fnn_pred, reg_xy_pred[[1]])
   
   # nominal
-  cls_xy <- fit_xy(
-    iris_basic %>% set_mode("classification"),
-    control = ctrl,
-    x = iris[, c("Sepal.Length", "Petal.Width")],
-    y = iris$Species
-  )
+  cls_xy <- nearest_neighbor(neighbors = 8) %>% 
+    set_engine("FNN") %>%
+    set_mode("classification") %>%
+    fit_xy(control = ctrl, x = iris[, c("Sepal.Length", "Petal.Width")], y = iris$Species)
   
   cls_xy_pred <- predict(cls_xy, iris[1:5, c("Sepal.Length", "Petal.Width")], )
   
@@ -107,12 +96,10 @@ test_that('FNN prediction', {
   expect_equal(cls_fnn_pred, cls_xy_pred)
   
   # continuous - formula interface
-  reg_form <- fit(
-    iris_basic %>% set_mode("regression"),
-    Sepal.Length ~ Sepal.Width + Petal.Width + Petal.Length,
-    data = iris,
-    control = ctrl
-  )
+  reg_form <- nearest_neighbor(neighbors = 8) %>% 
+    set_engine("FNN") %>%
+    set_mode("regression") %>%
+    fit(Sepal.Length ~ Sepal.Width + Petal.Width + Petal.Length, data = iris, control = ctrl)
   
   reg_form_pred <- predict(
     reg_form,

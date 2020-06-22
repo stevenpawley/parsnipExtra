@@ -12,13 +12,10 @@ Imports:
     parsnip,
     rlang,
     tibble,
-    liquidSVM,
-    FNN,
     fastNaiveBayes,
-    neuralnet,
     discrim,
     furrr,
     rsample
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.0.9000
 Suggests: 
     testthat

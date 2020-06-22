@@ -28,6 +28,18 @@ add_fastNaiveBayes_engine <- function() {
       defaults = list()
     )
   )
+  parsnip::set_encoding(
+    model = "naive_Bayes",
+    eng = "fastNaiveBayes",
+    mode = "classification",
+    options = list(predictor_indicators = TRUE)
+  )
+  parsnip::set_encoding(
+    model = "naive_Bayes",
+    eng = "fastNaiveBayes",
+    mode = "regression",
+    options = list(predictor_indicators = TRUE)
+  )
   parsnip::set_pred(
     model = "naive_Bayes",
     eng = "fastNaiveBayes",

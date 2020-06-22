@@ -47,6 +47,18 @@ add_neuralnet_engine <- function() {
       defaults = list()
     )
   )
+  parsnip::set_encoding(
+    model = "mlp",
+    eng = "neuralnet",
+    mode = "classification",
+    options = list(predictor_indicators = TRUE)
+  )
+  parsnip::set_encoding(
+    model = "mlp",
+    eng = "neuralnet",
+    mode = "regression",
+    options = list(predictor_indicators = TRUE)
+  )
   parsnip::set_pred(
     model = "mlp",
     eng = "neuralnet",

@@ -21,7 +21,7 @@ test_that('neuralnet execution', {
     data = iris_df,
     hidden = 1, 
     rep = 1
-    )
+  )
   nn_probs <- predict(nn_model, iris_df)
   nn_probs <- tibble::as_tibble(nn_probs)
   names(nn_probs) <- paste0(".pred_", levels(iris_df$Species))
@@ -36,4 +36,3 @@ test_that('neuralnet execution', {
   testthat::expect_equal(nn_model$net.result, clf_fit$fit$net.result)
   
 })
-

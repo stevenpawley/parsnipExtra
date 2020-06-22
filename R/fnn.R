@@ -4,7 +4,7 @@
 #' @return NULL
 #' @export
 add_fnn_engine <- function() {
-
+  
   parsnip::set_model_engine("nearest_neighbor", "classification", "FNN")
   parsnip::set_model_engine("nearest_neighbor", "regression", "FNN")
   parsnip::set_dependency("nearest_neighbor", "FNN", "FNN")
@@ -38,6 +38,18 @@ add_fnn_engine <- function() {
       func = c(fun = "fnn_train"),
       defaults = list()
     )
+  )
+  parsnip::set_encoding(
+    model = "nearest_neighbor",
+    eng = "FNN",
+    mode = "classification",
+    options = list(predictor_indicators = TRUE)
+  )
+  parsnip::set_encoding(
+    model = "nearest_neighbor",
+    eng = "FNN",
+    mode = "regression",
+    options = list(predictor_indicators = TRUE)
   )
   parsnip::set_pred(
     model = "nearest_neighbor",
@@ -117,7 +129,6 @@ add_fnn_engine <- function() {
   )
 }
 
-
 #' Nearest neighbors using FNN
 #'
 #' `fnn_train` is a wrapper for `FNN` fast nearest neighbor models
@@ -133,27 +144,28 @@ add_fnn_engine <- function() {
 #' @export
 fnn_train <- function(x, y = NULL, k = 1, algorithm = "kd_tree", ...) {
   
-  # regression
   if (is.numeric(y)) {
-    fun <- "knn.reg"
+    
     main_args <- list(
       train = rlang::enquo(x),
       y = rlang::enquo(y),
       k = k,
-      algorithm = algorithm)
-    call <- parsnip:::make_call(fun = fun, ns = "FNN", main_args)
-    rlang::eval_tidy(call, env = rlang::current_env())
+      algorithm = algorithm
+    )
     
-    # for classification return unevaluated call because FNN:knn
-    # trains and predicts in same call
+    call <- parsnip:::make_call(fun = "knn.reg", ns = "FNN", main_args)
+    rlang::eval_tidy(call, env = rlang::current_env())
+  
   } else {
-    fun <- "knn"
     main_args <- list(
       train = rlang::enquo(x),
       cl = rlang::enquo(y),
       k = k,
-      algorithm = algorithm)
-    call <- parsnip:::make_call(fun = fun, ns = "FNN", main_args)
+      algorithm = algorithm
+    )
+    
+    call <- parsnip:::make_call(fun = "knn", ns = "FNN", main_args)
+    
     list(call = call)
   }
 }
