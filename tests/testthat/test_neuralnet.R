@@ -23,7 +23,7 @@ test_that('neuralnet execution', {
     rep = 1
   )
   nn_probs <- predict(nn_model, iris_df)
-  nn_probs <- tibble::as_tibble(nn_probs)
+  nn_probs <- tibble::as_tibble(as.data.frame(nn_probs))
   names(nn_probs) <- paste0(".pred_", levels(iris_df$Species))
   
   # parsnip classification model

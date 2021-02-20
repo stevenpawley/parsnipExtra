@@ -4,7 +4,6 @@
     add_fastNaiveBayes_engine()
   }
   
-  add_lightgbm_engine()
   add_fnn_engine()
   add_neuralnet_engine()
 }

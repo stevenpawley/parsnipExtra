@@ -33,7 +33,7 @@ test_that('FNN execution', {
   expect_error(
     nearest_neighbor(neighbors = 8) %>% 
       set_engine("FNN") %>%
-      set_mode("regression") %>%
+      set_mode("classification") %>%
       fit_xy(control = ctrl, x = iris[, c("Sepal.Length", "Petal.Width")], y = iris$Species),
     regexp = NA
   )

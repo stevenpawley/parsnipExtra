@@ -43,13 +43,23 @@ add_fnn_engine <- function() {
     model = "nearest_neighbor",
     eng = "FNN",
     mode = "classification",
-    options = list(predictor_indicators = TRUE)
+    options = list(
+      predictor_indicators = "traditional",
+      compute_intercept = FALSE,
+      remove_intercept = FALSE,
+      allow_sparse_x = FALSE
+    )
   )
   parsnip::set_encoding(
     model = "nearest_neighbor",
     eng = "FNN",
     mode = "regression",
-    options = list(predictor_indicators = TRUE)
+    options = list(
+      predictor_indicators = "traditional",
+      compute_intercept = FALSE,
+      remove_intercept = FALSE,
+      allow_sparse_x = FALSE
+    )
   )
   parsnip::set_pred(
     model = "nearest_neighbor",
