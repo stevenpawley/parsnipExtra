@@ -1,8 +1,6 @@
 library(testthat)
-library(parsnip)
 library(rlang)
 library(tibble)
-library(magrittr)
 
 # rescale iris data
 iris_df <- iris
