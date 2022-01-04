@@ -3,11 +3,11 @@
 \name{add_fastNaiveBayes_engine}
 \alias{add_fastNaiveBayes_engine}
 \title{Wrapper to add the `fastNaiveBayes` engine to the parsnip `naive_Bayes` model
-specification in the discrim package}
+specification in the parsnip package}
 \usage{
 add_fastNaiveBayes_engine()
 }
 \description{
 Wrapper to add the `fastNaiveBayes` engine to the parsnip `naive_Bayes` model
-specification in the discrim package
+specification in the parsnip package
 }

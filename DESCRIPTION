@@ -13,12 +13,11 @@ Depends:
 Imports:
   rlang,
   tibble,
-  discrim,
   purrr,
   rsample,
   tibble,
   stats
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 Suggests: 
   testthat,
   fastNaiveBayes,
@@ -26,4 +25,3 @@ Suggests:
   neuralnet,
   tidymodels,
   modeldata
-  

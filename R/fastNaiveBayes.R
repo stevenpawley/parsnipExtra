@@ -1,9 +1,9 @@
 #' Wrapper to add the `fastNaiveBayes` engine to the parsnip `naive_Bayes` model
-#' specification in the discrim package
+#' specification in the parsnip package
 #'
 #' @return NULL
 #' @export
-#' @importFrom discrim naive_Bayes
+#' @importFrom parsnip naive_Bayes
 add_fastNaiveBayes_engine <- function() {
   
   parsnip::set_model_engine("naive_Bayes", "classification", "fastNaiveBayes")

@@ -4,7 +4,6 @@
 #' @return NULL
 #' @export
 add_fnn_engine <- function() {
-  
   parsnip::set_model_engine("nearest_neighbor", "classification", "FNN")
   parsnip::set_model_engine("nearest_neighbor", "regression", "FNN")
   parsnip::set_dependency("nearest_neighbor", "FNN", "FNN")
@@ -153,9 +152,7 @@ add_fnn_engine <- function() {
 #' @return list containing the FNN call
 #' @export
 fnn_train <- function(x, y = NULL, k = 1, algorithm = "kd_tree", ...) {
-  
   if (is.numeric(y)) {
-    
     main_args <- list(
       train = rlang::enquo(x),
       y = rlang::enquo(y),
@@ -194,7 +191,6 @@ fnn_train <- function(x, y = NULL, k = 1, algorithm = "kd_tree", ...) {
 #' @return data.frame containing the predicted results.
 #' @export
 fnn_pred <- function(object, newdata, prob = FALSE, ...) {
-  
   # modify the call for prediction
   object$call$test <- newdata
   
@@ -209,12 +205,16 @@ fnn_pred <- function(object, newdata, prob = FALSE, ...) {
     lvl <- levels(rlang::eval_tidy(object$call$cl))
     res <- rlang::eval_tidy(object$call)
     
-    # probability for winning class
+    # get probabilities for all classes based on proportion of neighbors
+    # for each class
     if (prob == FALSE) {
       attributes(res) <- NULL
       res <- factor(lvl[res], levels = lvl)
     } else {
-      res <- attr(res, "prob")
+      res <- attr(res, "nn.index")
+      cl <- rlang::eval_tidy(object$call$cl)
+      probs <- apply(res, 1, function(idx) prop.table(table(cl[idx])))
+      res <- as.data.frame(t(probs))
     }
   }
   
