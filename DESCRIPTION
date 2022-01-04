@@ -22,6 +22,7 @@ Suggests:
   testthat,
   fastNaiveBayes,
   FNN,
+  rknn,
   neuralnet,
   tidymodels,
   modeldata
