@@ -147,34 +147,11 @@ add_fnn_engine <- function() {
 #' @param k a vector (integer) of the number of neighbours to consider.
 #' @param algorithm character, one of c("kd_tree", "cover_tree", "brute"),
 #'   default = "kd_tree"
-#' @param scale whether to normalize the predictors, default is TRUE.
 #' @param ... additional arguments to pass to FNN, currently unused.
 #'
 #' @return list containing the FNN call
 #' @export
-fnn_train <- function(x, y = NULL, k = 1, algorithm = "kd_tree", 
-                      scale = FALSE, ...) {
-  
-  x <- as.data.frame(x)
-  
-  if (scale) {
-    numeric_cols <- unlist(lapply(x, is.numeric))  
-    trans <- scale(
-      x[, numeric_cols],
-      center = TRUE, 
-      scale = TRUE
-    )
-    
-    scaling_params <- list(
-      center = attr(trans, "scaled:center"),
-      scale =  attr(trans, "scaled:scale")
-    )
-    
-    x[, numeric_cols] <- trans
-  } else {
-    scaling_params = NULL
-  }
-  
+fnn_train <- function(x, y = NULL, k = 1, algorithm = "kd_tree", ...) {
   if (is.numeric(y)) {
     main_args <- list(
       train = rlang::enquo(x),
@@ -196,7 +173,7 @@ fnn_train <- function(x, y = NULL, k = 1, algorithm = "kd_tree",
     
     call <- parsnip:::make_call(fun = "knn", ns = "FNN", main_args)
     
-    list(call = call, scaling = scaling_params)
+    list(call = call)
   }
 }
 
@@ -215,18 +192,6 @@ fnn_train <- function(x, y = NULL, k = 1, algorithm = "kd_tree",
 #' @export
 fnn_pred <- function(object, newdata, prob = FALSE, ...) {
   # modify the call for prediction
-  newdata <- as.data.frame(newdata)
-  
-  if (!is.null(object$scaling)) {
-    numeric_cols <- unlist(lapply(x, is.numeric))
-    
-    newdata[, numeric_cols] <- scale(
-      newdata[, numeric_cols],
-      center = object$scaling$center,
-      scale = object$scaling$scale
-    )
-  }
-  
   object$call$test <- newdata
   
   # regression result
