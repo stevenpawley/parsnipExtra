@@ -17,7 +17,7 @@ add_mboost_engine <- function() {
       protect = c("formula", "data"),
       func = c(pkg = "mboost", fun = "gamboost"),
       defaults = list(family = mboost::Gaussian(),
-                      baselearner = "bols",
+                      baselearner = "bbs",
                       control = mboost::boost_control(mstop = 100))
     )
   )
@@ -30,7 +30,7 @@ add_mboost_engine <- function() {
       protect = c("formula", "data"),
       func = c(pkg = "mboost", fun = "gamboost"),
       defaults = list(family = mboost::Binomial(type = "adaboost", link = "logit"),
-                      baselearner = "bols",
+                      baselearner = "bbs",
                       control = mboost::boost_control(mstop = 100))
     )
   )
