@@ -18,7 +18,8 @@ add_mboost_engine <- function() {
       func = c(pkg = "mboost", fun = "gamboost"),
       defaults = list(family = mboost::Gaussian(),
                       baselearner = "bbs",
-                      control = mboost::boost_control(mstop = 100))
+                      control = mboost::boost_control(mstop = 100, nu = 0.1,
+                                                      risk = "inbag"))
     )
   )
   parsnip::set_fit(
@@ -31,7 +32,8 @@ add_mboost_engine <- function() {
       func = c(pkg = "mboost", fun = "gamboost"),
       defaults = list(family = mboost::Binomial(type = "adaboost", link = "logit"),
                       baselearner = "bbs",
-                      control = mboost::boost_control(mstop = 100))
+                      control = mboost::boost_control(mstop = 100, nu = 0.1,
+                                                      risk = "inbag"))
     )
   )
   parsnip::set_encoding(
