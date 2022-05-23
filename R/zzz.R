@@ -3,4 +3,5 @@
   add_rknn_engine()
   add_neuralnet_engine()
   add_fastNaiveBayes_engine()
+  add_mboost_engine()
 }
